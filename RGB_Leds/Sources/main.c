@@ -12,9 +12,13 @@
 #include "RGB_Control.h"
 #include "SW_Timer.h"
 
+//! Red initial intensity
 #define RED_INIT_VALUE		(0x00)
+//! Green initial intensity
 #define GREEN_INIT_VALUE	(0x80)
+//! Blue initial intensity
 #define BLUE_INIT_VALUE		(0xFF)
+//! SW timer with a 100ms timeout
 #define CHANGE_COLOR_TIMER	(100/SWTIMER_BASE_TIME)
 
 void vfnChangeColorTimerCallback (void);
@@ -48,7 +52,7 @@ void vfnChangeColorTimerCallback (void)
 	static uint8_t bGreenColor = GREEN_INIT_VALUE;
 	static uint8_t bBlueColor = BLUE_INIT_VALUE;
 	
-	/* Get a new color */
+	/* Calculate a new color */
 	bRedColor++;
 	bGreenColor++;
 	bBlueColor++;

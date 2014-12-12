@@ -17,14 +17,18 @@
 //                                  Defines & Macros Section                                     
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
-
+//! PWM channel for Red LED
 #define RGB_RED_TIMER		(TPM2)
+//! PWM channel for Green LED
 #define RGB_GREEN_TIMER		(TPM2)
+//! PWM channel for Blue LED
 #define RGB_BLUE_TIMER		(TPM0)
 
-
+//! PWM timer for Red LED
 #define RGB_RED_CHANNEL		(TPM_CH0)
+//! PWM timer for Green LED
 #define RGB_GREEN_CHANNEL	(TPM_CH1)
+//! PWM timer for Blue LED
 #define RGB_BLUE_CHANNEL	(TPM_CH1)
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //                                      Typedef Section                                          
@@ -49,9 +53,27 @@
 #if defined(__cplusplus)
 extern "C" {
 #endif // __cplusplus
-
+/*!
+ *	@brief	Initializes all the PWM timers and channels
+ * 
+ *	@param	void
+ * 	
+ * 	@return	void								
+ *	
+*/
 void RGB_vfnInit(void);
-
+/*!
+ *	@brief	Change LEDs intensity
+ * 
+ *	@param	bNewRed		[in] New intensity for Red. Any value from 0x00 - 0xFF is valid
+ * 	
+ *	@param	bNewGreen	[in] New intensity for Green. Any value from 0x00 - 0xFF is valid
+ *	
+ *	@param	bNewBlue	[in] New intensity for Blue. Any value from 0x00 - 0xFF is valid
+ *	
+ * 	@return	void								
+ *	
+*/
 void RGB_vfnChangeColor(uint8_t bNewRed, uint8_t bNewGreen, uint8_t bNewBlue);
 
 #if defined(__cplusplus)

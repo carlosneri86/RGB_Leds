@@ -182,8 +182,6 @@ void BoardConfig_vfnInit(void)
 	/* UART pins */
 	
 	GPIO_vfnPinMux(GPIO_PORT_A,1,GPIO_MUX_ALT_2);
-	//GPIO_vfnPinMux(GPIO_PORT_E,21,GPIO_MUX_ALT_4);
-	
 	
 	GPIO_vfnPinMux(GPIO_PORT_A,2,GPIO_MUX_ALT_2);
 	

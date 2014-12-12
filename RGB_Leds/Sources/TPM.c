@@ -1,29 +1,21 @@
- /*********************************************************************************************//*!
- *
- * @file TPM.c
- *
- * @author Carlos Neri
- *
- * @date 4/02/2012
- *
- * @brief Brief description of the file
- *************************************************************************************************/
-/*************************************************************************************************/
-/*                                      Includes Section                                         */
-/*************************************************************************************************/
+/*HEADER******************************************************************************************
+*
+* Comments:
+*
+*
+**END********************************************************************************************/
+///////////////////////////////////////////////////////////////////////////////////////////////////
+//                                      Includes Section                        
+///////////////////////////////////////////////////////////////////////////////////////////////////
 #include <derivative.h>
 #include <stdint.h>
 #include <stddef.h>
 #include "NVIC.h"
 #include "TPM.h"
-/*************************************************************************************************/
-/*                                  Function Prototypes Section                                  */
-/*************************************************************************************************/
-
-/*************************************************************************************************/
-/*                                   Defines & Macros Section                                    */
-/*************************************************************************************************/
-
+///////////////////////////////////////////////////////////////////////////////////////////////////
+//                                   Defines & Macros Section                   
+///////////////////////////////////////////////////////////////////////////////////////////////////
+//! TPM available registers.
 enum eTPM_Registers
 {
 	TPM_SC = 0,
@@ -47,25 +39,34 @@ enum eTPM_Registers
 	
 };
 
-/*************************************************************************************************/
-/*                                       Typedef Section                                         */
-/*************************************************************************************************/
-
-/*************************************************************************************************/
-/*                                   Global Variables Section                                    */
-/*************************************************************************************************/
+///////////////////////////////////////////////////////////////////////////////////////////////////
+//                                       Typedef Section                        
+///////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-/*************************************************************************************************/
-/*                                   Static Variables Section                                    */
-/*************************************************************************************************/
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+//                                  Function Prototypes Section                 
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+//                                   Global Constants Section                   
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+//                                   Static Constants Section                   
+///////////////////////////////////////////////////////////////////////////////////////////////////
+//! Corresponding clock gate masks for all the TPM modules.
 static const uint32_t TPM_gadwClockGateMask[MAX_TPM] =
 {
 		SIM_SCGC6_TPM0_MASK,
 		SIM_SCGC6_TPM1_MASK,
 		SIM_SCGC6_TPM2_MASK
 };
-
+//! Registers address of all the TPM modules.
 static volatile uint32_t * const TPM_gapdwRegisters[MAX_TPM][TPM_MAX_REGISTERS] =
 {
 		{
@@ -126,37 +127,32 @@ static volatile uint32_t * const TPM_gapdwRegisters[MAX_TPM][TPM_MAX_REGISTERS] 
 			&TPM2_CONF
 		}
 };
-/*************************************************************************************************/
-/*                                   Global Constants Section                                    */
-/*************************************************************************************************/
 
-/*************************************************************************************************/
-/*                                   Static Constants Section                                    */
-/*************************************************************************************************/
+///////////////////////////////////////////////////////////////////////////////////////////////////
+//                                   Global Variables Section                   
+///////////////////////////////////////////////////////////////////////////////////////////////////
 
-/*************************************************************************************************/
-/*                                      Functions Section                                        */
-/*************************************************************************************************/
-/*!
-      \fn  UART_vfnInit
-      \param bUARTToEnable: UART to be enabled. Values available on UART.h
-      \param wBaudRate: Calculated value for desired baudrate
-      \param bOverSamplingUart0: Just to be used when UART0 is required. Sets the oversampling ratio used for baudarate generation
-      \param bUART0ClockSource: Just to be used when UART0 is required. Sets the clock source for UART0. Values available on UART.h
-      \brief  Initializes the respective UART
-      \return
-*/
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+//                                   Static Variables Section                   
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+//                                      Functions Section                       
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
 void TPM_vfnInit(uint8_t bTPMToEnable, uint8_t bTPMClockSource, uint16_t wTPMModulo)
 {
 	uint32_t * pdwTPM_ModRegister;
 	
-	/* Confirm the UART to be enable is within the available on the SoC */
+	/* Confirm the TPM to be enable is within the available on the SoC */
 	if(bTPMToEnable < MAX_TPM)
 	{
 		
 		SIM_SCGC6 |= TPM_gadwClockGateMask[bTPMToEnable];
 		
-		/* Select the UART clock source */
+		/* Select the TPM clock source and load the period*/
 		SIM_SOPT2 |= SIM_SOPT2_TPMSRC(bTPMClockSource);
 		
 		pdwTPM_ModRegister = (uint32_t*)TPM_gapdwRegisters[bTPMToEnable][TPM_MOD];
@@ -166,14 +162,7 @@ void TPM_vfnInit(uint8_t bTPMToEnable, uint8_t bTPMClockSource, uint16_t wTPMMod
 	}
 		
 }
-/*!
-      \fn  UART_vfnTxBuffer
-      \param bUartToUse: UART to be used. Values available on UART.h
-      \param pbTxBuffer: Pointer to the buffer data
-      \param wDataToSend: Amount of bytes to be sent
-      \brief  Sends thru UART the bytes requested
-      \return
-*/
+
 void TPM_vfnStartTimer(uint8_t bTPMToEnable, uint8_t bTPMPrescaler)
 {
 	uint32_t * pdwTPM_SCRegister;
@@ -181,7 +170,7 @@ void TPM_vfnStartTimer(uint8_t bTPMToEnable, uint8_t bTPMPrescaler)
 	if(bTPMToEnable < MAX_TPM)
 	{
 		pdwTPM_SCRegister = (uint32_t*)TPM_gapdwRegisters[bTPMToEnable][TPM_SC];
-		/* Enable module with internal CLK */
+		/* Enable module with internal CLK and */
 		*pdwTPM_SCRegister = TPM_SC_CMOD(0x01)|TPM_SC_PS(bTPMPrescaler);
 	}
 }
@@ -191,10 +180,10 @@ void TPM_vfnConfigChannel(uint8_t bTPMToEnable, uint8_t bTPMChannel, uint8_t bTP
 {
 	uint32_t * pdwChannelSC;
 	uint32_t * pdwChannelValue;
-	
+	/* Get the channel registers address*/
 	pdwChannelSC = (uint32_t*)TPM_gapdwRegisters[bTPMToEnable][TPM_CH0_SC+(2*bTPMChannel)];
 	pdwChannelValue = (uint32_t*)TPM_gapdwRegisters[bTPMToEnable][TPM_CH0_V+(bTPMChannel*2)];
-	
+	/*	Configure the channel*/
 	*pdwChannelSC = (bTPMMSx<<TPM_CnSC_MSA_SHIFT)|(bTPMELSx<<TPM_CnSC_ELSA_SHIFT);
 	*pdwChannelValue = wChannelValue;
 }
@@ -202,10 +191,14 @@ void TPM_vfnConfigChannel(uint8_t bTPMToEnable, uint8_t bTPMChannel, uint8_t bTP
 
 void TPM_vfnUpdateChannel(uint8_t bTPMToEnable, uint8_t bTPMChannel, uint16_t wChannelValue)
 {
-	
 	uint32_t * pdwChannelValue;
-	
+	/* get the channel register address and updated it */
 	pdwChannelValue = (uint32_t*)TPM_gapdwRegisters[bTPMToEnable][TPM_CH0_V+(bTPMChannel*2)];
 	
 	*pdwChannelValue = wChannelValue;
 }
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// EOF
+///////////////////////////////////////////////////////////////////////////////////////////////////
+

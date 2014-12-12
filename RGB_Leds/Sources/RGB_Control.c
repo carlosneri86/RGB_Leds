@@ -14,15 +14,15 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //                                   Defines & Macros Section                   
 ///////////////////////////////////////////////////////////////////////////////////////////////////
-/* Period in hz */
+//! PWM period, in hertz
 #define RGB_PERIOD			(100)
-
+//! Prescaler used for the PWM module
 #define RGB_TIMER_PRESCALER	(TPM_PRESCALER_4)
-
+//! Calculate the period based on the PWM module clock and prescaler
 #define RGB_PWM_PERIOD	(uint16_t)((BUS_CLOCK/(4))/RGB_PERIOD)
-
+//! Initial duty. Set to 50% for all the PWM channels
 #define RGB_INIT_DUTY_CYCLE		((RGB_PWM_PERIOD*50)/100)
-
+//! Constant for scaling from 8 bit RGB values to equivalent on RGB_PWM_PERIOD
 #define RGB_SCALE_CONSTANT		(uint16_t)(RGB_PWM_PERIOD/UINT8_MAX)
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //                                       Typedef Section                        
@@ -82,8 +82,9 @@ void RGB_vfnInit(void)
 void RGB_vfnChangeColor(uint8_t bNewRed, uint8_t bNewGreen, uint8_t bNewBlue)
 {
 	uint16_t wNewColor = 0;
-	/* Calculate the PWM duty based on the period */
-	/* The LEDs are connected to the anode, hence, the full bright is 0 and off is FF*/
+	/* Calculate the PWM duty based on the period 										*/
+	/* The LEDs are connected to the anode, hence, the full bright is 0 and off is FF	*/
+	/* The period calculation is based on a simple y = mx + b							*/
 	wNewColor = RGB_PWM_PERIOD - (bNewRed*RGB_SCALE_CONSTANT);
 	
 	TPM_vfnUpdateChannel(RGB_RED_TIMER,RGB_RED_CHANNEL,wNewColor);
